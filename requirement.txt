@@ -1,4 +1,0 @@
-tesnorflow
-numpy 
-pillow
-streamlit
