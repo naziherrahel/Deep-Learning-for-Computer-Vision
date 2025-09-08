@@ -94,3 +94,52 @@ def count_tensor_elements(x: Tensor) -> int:
     #                            END OF YOUR CODE                            #
     ##########################################################################
     return num_elements
+
+
+
+def create_tensor_of_pi(M: int, N: int) -> Tensor:
+    """
+    Returns a Tensor of shape (M, N) filled entirely with the value 3.14
+
+    Args:
+        M, N: Positive integers giving the shape of Tensor to create
+
+    Returns:
+        x: A tensor of shape (M, N) filled with the value 3.14
+    """
+    x = None
+    ##########################################################################
+    #         TODO: Implement this function. It should take one line.        #
+    ##########################################################################
+    # Replace "pass" statement with your code
+    pass
+    ##########################################################################
+    #                            END OF YOUR CODE                            #
+    ##########################################################################
+    return x
+
+
+def multiples_of_ten(start: int, stop: int) -> Tensor:
+    """
+    Returns a Tensor of dtype torch.float64 that contains all of the multiples
+    of ten (in order) between start and stop, inclusive. If there are no
+    multiples of ten in this range then return an empty tensor of shape (0,).
+
+    Args:
+        start: Beginning ot range to create.
+        stop: End of range to create (stop >= start).
+
+    Returns:
+        x: float64 Tensor giving multiples of ten between start and stop
+    """
+    assert start <= stop
+    x = None
+    ##########################################################################
+    #                      TODO: Implement this function                     #
+    ##########################################################################
+    # Replace "pass" statement with your code
+    pass
+    ##########################################################################
+    #                            END OF YOUR CODE                            #
+    ##########################################################################
+    return x
