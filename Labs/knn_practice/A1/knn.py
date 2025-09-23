@@ -66,3 +66,49 @@ def compute_distances_two_loops(x_train: torch.Tensor, x_test: torch.Tensor):
     ##########################################################################
     return dists
 
+
+
+def compute_distances_one_loop(x_train: torch.Tensor, x_test: torch.Tensor):
+    """
+    Computes the squared Euclidean distance between each element of training
+    set and each element of test set. Images should be flattened and treated
+    as vectors.
+
+    This implementation uses only a single loop over the training data.
+
+    Similar to `compute_distances_two_loops`, this should be able to handle
+    inputs with any number of dimensions. The inputs should not be modified.
+
+    NOTE: Your implementation may not use `torch.norm`, `torch.dist`,
+    `torch.cdist`, or their instance method variants (`x.norm`, `x.dist`,
+    `x.cdist`, etc.). You may not use any functions from `torch.nn` or
+    `torch.nn.functional` modules.
+
+    Args:
+        x_train: Tensor of shape (num_train, D1, D2, ...)
+        x_test: Tensor of shape (num_test, D1, D2, ...)
+
+    Returns:
+        dists: Tensor of shape (num_train, num_test) where dists[i, j]
+            is the squared Euclidean distance between the i-th training point
+            and the j-th test point. It should have the same dtype as x_train.
+    """
+    # Initialize dists to be a tensor of shape (num_train, num_test) with the
+    # same datatype and device as x_train
+    num_train = x_train.shape[0]
+    num_test = x_test.shape[0]
+    dists = x_train.new_zeros(num_train, num_test)
+    ##########################################################################
+    # TODO: Implement this function using only a single loop over x_train.   #
+    #                                                                        #
+    # You may not use torch.norm (or its instance method variant), nor any   #
+    # functions from torch.nn or torch.nn.functional.                        #
+    ##########################################################################
+    # Replace "pass" statement with your code
+    pass
+    ##########################################################################
+    #                           END OF YOUR CODE                             #
+    ##########################################################################
+    return dists
+
+
