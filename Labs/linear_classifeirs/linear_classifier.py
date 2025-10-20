@@ -269,6 +269,7 @@ def sample_batch(
     return X_batch, y_batch
 
 
+
 def train_linear_classifier(
     loss_func: Callable,
     W: torch.Tensor,
@@ -280,25 +281,119 @@ def train_linear_classifier(
     batch_size: int = 200,
     verbose: bool = False,
 ):
-   
-    pass
-        
+    """
+    Train this linear classifier using stochastic gradient descent.
 
-    return None
+    Inputs:
+    - loss_func: loss function to use when training. It should take W, X, y
+      and reg as input, and output a tuple of (loss, dW)
+    - W: A PyTorch tensor of shape (D, C) giving the initial weights of the
+      classifier. If W is None then it will be initialized here.
+    - X: A PyTorch tensor of shape (N, D) containing training data; there are N
+      training samples each of dimension D.
+    - y: A PyTorch tensor of shape (N,) containing training labels; y[i] = c
+      means that X[i] has label 0 <= c < C for C classes.
+    - learning_rate: (float) learning rate for optimization.
+    - reg: (float) regularization strength.
+    - num_iters: (integer) number of steps to take when optimizing
+    - batch_size: (integer) number of training examples to use at each step.
+    - verbose: (boolean) If true, print progress during optimization.
+
+    Returns: A tuple of:
+    - W: The final value of the weight matrix and the end of optimization
+    - loss_history: A list of Python scalars giving the values of the loss at each
+      training iteration.
+    """
+    # assume y takes values 0...K-1 where K is number of classes
+    num_train, dim = X.shape
+    if W is None:
+        # lazily initialize W
+        num_classes = torch.max(y) + 1
+        W = 0.000001 * torch.randn(
+            dim, num_classes, device=X.device, dtype=X.dtype
+        )
+    else:
+        num_classes = W.shape[1]
+
+    # Run stochastic gradient descent to optimize W
+    loss_history = []
+    for it in range(num_iters):
+        # TODO: implement sample_batch function
+        X_batch, y_batch = sample_batch(X, y, num_train, batch_size)
+
+        # evaluate loss and gradient
+        loss, grad = loss_func(W, X_batch, y_batch, reg)
+        loss_history.append(loss.item())
+
+        # perform parameter update
+        #########################################################################
+        # TODO:                                                                 #
+        # Update the weights using the gradient and the learning rate.          #
+        #########################################################################
+        # Replace "pass" statement with your code
+        pass
+        #########################################################################
+        #                       END OF YOUR CODE                                #
+        #########################################################################
+
+        if verbose and it % 100 == 0:
+            print("iteration %d / %d: loss %f" % (it, num_iters, loss))
+
+    return W, loss_history
+
 
 def predict_linear_classifier(W: torch.Tensor, X: torch.Tensor):
-    
+    """
+    Use the trained weights of this linear classifier to predict labels for
+    data points.
+
+    Inputs:
+    - W: A PyTorch tensor of shape (D, C), containing weights of a model
+    - X: A PyTorch tensor of shape (N, D) containing training data; there are N
+      training samples each of dimension D.
+
+    Returns:
+    - y_pred: PyTorch int64 tensor of shape (N,) giving predicted labels for each
+      elemment of X. Each element of y_pred should be between 0 and C - 1.
+    """
+    y_pred = torch.zeros(X.shape[0], dtype=torch.int64)
+    ###########################################################################
+    # TODO:                                                                   #
+    # Implement this method. Store the predicted labels in y_pred.            #
+    ###########################################################################
+    # Replace "pass" statement with your code
     pass
-    
-    return None
+    ###########################################################################
+    #                           END OF YOUR CODE                              #
+    ###########################################################################
+    return y_pred
 
 
 def svm_get_search_params():
-    
+    """
+    Return candidate hyperparameters for the SVM model. You should provide
+    at least two param for each, and total grid search combinations
+    should be less than 25.
+
+    Returns:
+    - learning_rates: learning rate candidates, e.g. [1e-3, 1e-2, ...]
+    - regularization_strengths: regularization strengths candidates
+                                e.g. [1e0, 1e1, ...]
+    """
+
+    learning_rates = []
+    regularization_strengths = []
+
+    ###########################################################################
+    # TODO:   add your own hyper parameter lists.                             #
+    ###########################################################################
+    # Replace "pass" statement with your code
     pass
+    ###########################################################################
+    #                           END OF YOUR CODE                              #
+    ###########################################################################
 
-
-    return None
+    return learning_rates, regularization_strengths
 
 
 def test_one_param_set(
@@ -308,11 +403,50 @@ def test_one_param_set(
     reg: float,
     num_iters: int = 2000,
 ):
+    """
+    Train a single LinearClassifier instance and return the learned instance
+    with train/val accuracy.
 
+    Inputs:
+    - cls (LinearClassifier): a newly-created LinearClassifier instance.
+                              Train/Validation should perform over this instance
+    - data_dict (dict): a dictionary that includes
+                        ['X_train', 'y_train', 'X_val', 'y_val']
+                        as the keys for training a classifier
+    - lr (float): learning rate parameter for training a SVM instance.
+    - reg (float): a regularization weight for training a SVM instance.
+    - num_iters (int, optional): a number of iterations to train
+
+    Returns:
+    - cls (LinearClassifier): a trained LinearClassifier instances with
+                              (['X_train', 'y_train'], lr, reg)
+                              for num_iter times.
+    - train_acc (float): training accuracy of the svm_model
+    - val_acc (float): validation accuracy of the svm_model
+    """
+    train_acc = 0.0  # The accuracy is simply the fraction of data points
+    val_acc = 0.0  # that are correctly classified.
+    ###########################################################################
+    # TODO:                                                                   #
+    # Write code that, train a linear SVM on the training set, compute its    #
+    # accuracy on the training and validation sets                            #
+    #                                                                         #
+    # Hint: Once you are confident that your validation code works, you       #
+    # should rerun the validation code with the final value for num_iters.    #
+    # Before that, please test with small num_iters first                     #
+    ###########################################################################
+    # Feel free to uncomment this, at the very beginning,
+    # and don't forget to remove this line before submitting your final version
+    # num_iters = 100
+
+    # Replace "pass" statement with your code
     pass
+    ############################################################################
+    #                            END OF YOUR CODE                              #
+    ############################################################################
 
+    return cls, train_acc, val_acc
 
-    return None
 
 
 # **************************************************#
