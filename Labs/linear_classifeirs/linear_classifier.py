@@ -430,14 +430,8 @@ def test_one_param_set(
     # TODO:                                                                   #
     # Write code that, train a linear SVM on the training set, compute its    #
     # accuracy on the training and validation sets                            #
-    #                                                                         #
-    # Hint: Once you are confident that your validation code works, you       #
-    # should rerun the validation code with the final value for num_iters.    #
-    # Before that, please test with small num_iters first                     #
     ###########################################################################
-    # Feel free to uncomment this, at the very beginning,
-    # and don't forget to remove this line before submitting your final version
-    # num_iters = 100
+    
 
     # Replace "pass" statement with your code
     pass
