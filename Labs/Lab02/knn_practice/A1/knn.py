@@ -120,11 +120,8 @@ def compute_distances_no_loops(x_train: torch.Tensor, x_test: torch.Tensor):
     set and each element of test set. Images should be flattened and treated
     as vectors.
 
-    This implementation should not use any Python loops. For memory-efficiency,
-    it also should not create any large intermediate tensors; in particular you
-    should not create any intermediate tensors with O(num_train * num_test)
-    elements.
-
+    This implementation should not use any Python loops. 
+    s
     Similar to `compute_distances_two_loops`, this should be able to handle
     inputs with any number of dimensions. The inputs should not be modified.
 
