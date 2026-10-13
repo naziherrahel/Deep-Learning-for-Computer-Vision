@@ -56,21 +56,19 @@ def sample_batch(
 
     X_batch = None
     y_batch = None
-    #############################################################################
-    # TODO:                                                                     #
-    # Sample batch_size indices from the training set with replacement. Use     #
-    # torch.randint and pass the supplied generator so the result is            #
-    # reproducible. Store the selected examples in X_batch and their labels in  #
-    # y_batch.                                                                  #
-    #############################################################################
-    # Replace "pass" statement with your code
-    pass
-    #############################################################################
-    #                             END OF YOUR CODE                              #
-    #############################################################################
+
+    indices = torch.randint(
+        low=0,
+        high=X.shape[0],
+        size=(batch_size,),
+        generator=generator,
+        device=X.device,
+    )
+
+    X_batch = X[indices]
+    y_batch = y[indices]
 
     return X_batch, y_batch
-
 
 def train_linear_classifier(
     loss_func: LossFunction,
@@ -113,7 +111,7 @@ def train_linear_classifier(
         # Apply one SGD update to W using the learning rate and gradient.        #
         #########################################################################
         # Replace "pass" statement with your code
-        pass
+        W -= learning_rate * gradient
         #########################################################################
         #                         END OF YOUR CODE                              #
         #########################################################################
