@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pedestrian box labeler</title>
+  <style>
+    :root { color-scheme: light; font-family: Arial, sans-serif; color: #252525; background: #f5f4f1; }
+    body { margin: 0; }
+    main { max-width: 1050px; margin: 0 auto; padding: 28px 22px 48px; }
+    h1 { margin: 0 0 12px; font-size: 1.7rem; }
+    p, li { line-height: 1.5; }
+    .panel { background: #fff; border: 1px solid #d9d6cf; border-radius: 10px; padding: 18px; margin-top: 18px; }
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    button, input { font: inherit; }
+    button { border: 1px solid #777; border-radius: 6px; background: #fff; padding: 8px 12px; cursor: pointer; }
+    button:hover { background: #f0eee9; }
+    button:disabled { color: #888; cursor: not-allowed; }
+    #status { margin: 12px 0 0; font-weight: 600; }
+    #canvas-wrap { overflow: auto; border: 1px solid #d9d6cf; background: #e8e6df; margin-top: 16px; }
+    canvas { display: block; max-width: 100%; height: auto; cursor: crosshair; }
+    code { background: #eceae4; border-radius: 4px; padding: 2px 4px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Pedestrian box labeler</h1>
+    <p>Choose one image, then draw one tight box around each visible pedestrian. Overlapping people need separate boxes. Save the downloaded label file next to the image, with the same base name.</p>
+
+    <section class="panel">
+      <div class="controls">
+        <label>Image <input id="image-input" type="file" accept="image/png,image/jpeg"></label>
+        <button id="undo-button" type="button" disabled>Undo last box</button>
+        <button id="clear-button" type="button" disabled>Clear boxes</button>
+        <button id="download-button" type="button" disabled>Download YOLO label</button>
+      </div>
+      <p id="status">Choose an image to begin.</p>
+      <div id="canvas-wrap"><canvas id="canvas"></canvas></div>
+    </section>
+
+    <section class="panel">
+      <strong>YOLO label format</strong>
+      <p>Every line in the downloaded file has the form <code>0 x_center y_center width height</code>. The values are normalized by the image width and height. Class <code>0</code> is pedestrian.</p>
+    </section>
+  </main>
+
+  <script>
+    const input = document.getElementById('image-input');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    const status = document.getElementById('status');
+    const undoButton = document.getElementById('undo-button');
+    const clearButton = document.getElementById('clear-button');
+    const downloadButton = document.getElementById('download-button');
+
+    let image = null;
+    let imageFile = null;
+    let boxes = [];
+    let dragStart = null;
+    let draftBox = null;
+
+    function pointerPosition(event) {
+      const bounds = canvas.getBoundingClientRect();
+      return {
+        x: Math.max(0, Math.min(canvas.width, (event.clientX - bounds.left) * canvas.width / bounds.width)),
+        y: Math.max(0, Math.min(canvas.height, (event.clientY - bounds.top) * canvas.height / bounds.height)),
+      };
+    }
+
+    function normalizedRectangle(start, end) {
+      const x = Math.min(start.x, end.x);
+      const y = Math.min(start.y, end.y);
+      return { x, y, width: Math.abs(end.x - start.x), height: Math.abs(end.y - start.y) };
+    }
+
+    function drawRectangle(box, dashed = false) {
+      context.save();
+      context.strokeStyle = dashed ? '#d78700' : '#b42318';
+      context.lineWidth = Math.max(2, Math.round(canvas.width / 500));
+      if (dashed) context.setLineDash([7, 5]);
+      context.strokeRect(box.x, box.y, box.width, box.height);
+      context.fillStyle = '#b42318';
+      context.font = `${Math.max(14, Math.round(canvas.width / 42))}px Arial`;
+      context.fillText('pedestrian', box.x + 3, Math.max(16, box.y - 5));
+      context.restore();
+    }
+
+    function redraw() {
+      if (!image) return;
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(image, 0, 0);
+      boxes.forEach((box) => drawRectangle(box));
+      if (draftBox) drawRectangle(draftBox, true);
+      status.textContent = `${imageFile.name}: ${boxes.length} pedestrian box${boxes.length === 1 ? '' : 'es'}.`;
+      undoButton.disabled = boxes.length === 0;
+      clearButton.disabled = boxes.length === 0;
+      downloadButton.disabled = !image || boxes.length === 0;
+    }
+
+    input.addEventListener('change', () => {
+      const [file] = input.files;
+      if (!file) return;
+      imageFile = file;
+      boxes = [];
+      const reader = new FileReader();
+      reader.onload = () => {
+        image = new Image();
+        image.onload = () => {
+          canvas.width = image.naturalWidth;
+          canvas.height = image.naturalHeight;
+          redraw();
+        };
+        image.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    canvas.addEventListener('mousedown', (event) => {
+      if (!image) return;
+      dragStart = pointerPosition(event);
+      draftBox = null;
+    });
+
+    canvas.addEventListener('mousemove', (event) => {
+      if (!dragStart) return;
+      draftBox = normalizedRectangle(dragStart, pointerPosition(event));
+      redraw();
+    });
+
+    window.addEventListener('mouseup', (event) => {
+      if (!dragStart) return;
+      const box = normalizedRectangle(dragStart, pointerPosition(event));
+      dragStart = null;
+      draftBox = null;
+      if (box.width >= 4 && box.height >= 4) boxes.push(box);
+      redraw();
+    });
+
+    undoButton.addEventListener('click', () => {
+      boxes.pop();
+      redraw();
+    });
+
+    clearButton.addEventListener('click', () => {
+      boxes = [];
+      redraw();
+    });
+
+    downloadButton.addEventListener('click', () => {
+      const lines = boxes.map((box) => {
+        const xCenter = (box.x + box.width / 2) / canvas.width;
+        const yCenter = (box.y + box.height / 2) / canvas.height;
+        const width = box.width / canvas.width;
+        const height = box.height / canvas.height;
+        return `0 ${xCenter.toFixed(8)} ${yCenter.toFixed(8)} ${width.toFixed(8)} ${height.toFixed(8)}`;
+      });
+      const labelFile = new Blob([`${lines.join('\n')}\n`], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(labelFile);
+      link.download = imageFile.name.replace(/\.[^.]+$/, '') + '.txt';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(link.href), 0);
+    });
+  </script>
+</body>
+</html>
