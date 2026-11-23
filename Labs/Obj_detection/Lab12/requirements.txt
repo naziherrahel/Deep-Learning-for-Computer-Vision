@@ -1,0 +1,6 @@
+ipykernel>=6
+numpy==1.26.4
+matplotlib
+Pillow
+albumentations==1.4.24
+ultralytics==8.3.0
